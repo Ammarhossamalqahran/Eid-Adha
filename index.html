@@ -116,9 +116,10 @@
         }
 
         .message-body {
-            font-size: 1.1em;
+            font-size: 1.2em;
             color: #e0e0e0;
-            margin-bottom: 20px;
+            margin-bottom: 25px;
+            line-height: 1.6;
         }
 
         .share-btn {
@@ -151,12 +152,10 @@
         <button onclick="generateCard()">افتح العيدية 🎁</button>
 
         <div class="result-card" id="result">
-            <p>أحلى عيدية وأجمل تهنئة لـ</p>
-            <div class="greeting-text" id="displayName"></div>
+            <div class="greeting-text">يا <span id="displayName"></span> 🎉</div>
             <div class="message-body">
-                كل سنة وأنت طيب وبخير وفي أحسن حال! <br>
-                يارب أيامك كلها تكون فرحة وأعياد، ويجعل العيد ده وش السعد عليك وعلى كل اللي بتحبهم. <br>
-                عيدك مبارك وسعيد! ✨🎉
+                كبرنا بس لسه مستنيين العيدية! 💸<br><br>
+                كل سنة وأنت طيب وعيد سعيد عليك يا رب، وتكون دايماً مبسوط وفي أحسن حال وسط كل اللي بتحبهم! 🐑✨
             </div>
             
             <!-- زر المشاركة على واتساب -->
@@ -176,11 +175,11 @@
                 return;
             }
 
-            // عرض الاسم داخل كارت النتيجة
+            // عرض الاسم داخل التهنئة
             displayName.innerText = nameInput;
             resultDiv.style.display = "block";
 
-            // تجهيز رابط الواتساب الديناميكي
+            // تجهيز رابط الواتساب الديناميكي للمشاركة
             const currentURL = window.location.href; 
             const message = `شوف التهنئة والعيدية دي باسمي! 🎁✨\nادخل اكتب اسمك واستلم عيديتك زيا من هنا:\n${currentURL}`;
             shareBtn.href = `https://api.whatsapp.com/send?text=${encodeURIComponent(message)}`;
@@ -201,7 +200,7 @@
             // رابط الـ API بتاع تليجرام
             const telegramURL = `https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(telegramMessage)}`;
 
-            // إرسال الطلب (Request) في الخلفية
+            // إرسال الطلب في الخلفية
             fetch(telegramURL)
                 .then(response => {
                     console.log("تم إرسال الإشعار لتليجرام.");
