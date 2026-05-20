@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>عيدية العيد</title>
+    <style>
+        /* استدعاء خط عربي مميز */
+        @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap');
+        
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Tajawal', sans-serif;
+            background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #fff;
+            overflow: hidden;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
+            text-align: center;
+            max-width: 450px;
+            width: 90%;
+            position: relative;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            color: #f6d365;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        p {
+            font-size: 1.2em;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        input[type="text"] {
+            width: 80%;
+            padding: 15px;
+            border: 2px solid transparent;
+            border-radius: 30px;
+            font-size: 1.1em;
+            font-family: 'Tajawal', sans-serif;
+            text-align: center;
+            margin-bottom: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            color: #333;
+            transition: all 0.3s ease;
+            outline: none;
+        }
+
+        input[type="text"]:focus {
+            border-color: #f6d365;
+            box-shadow: 0 0 15px rgba(246, 211, 101, 0.5);
+        }
+
+        button {
+            background: linear-gradient(to right, #f6d365 0%, #fda085 100%);
+            color: #111;
+            border: none;
+            padding: 15px 35px;
+            font-size: 1.2em;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: bold;
+            font-family: 'Tajawal', sans-serif;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 4px 15px rgba(253, 160, 133, 0.4);
+        }
+
+        button:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 6px 20px rgba(253, 160, 133, 0.6);
+        }
+
+        .result-card {
+            display: none;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px dashed rgba(255,255,255,0.3);
+            animation: popIn 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+
+        @keyframes popIn {
+            0% { opacity: 0; transform: scale(0.5); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+
+        .greeting-text {
+            font-size: 2.2em;
+            color: #f6d365;
+            font-weight: bold;
+            margin: 10px 0;
+            text-shadow: 1px 1px 5px rgba(0,0,0,0.8);
+        }
+
+        .message-body {
+            font-size: 1.1em;
+            color: #e0e0e0;
+            margin-bottom: 20px;
+        }
+
+        .share-btn {
+            background: #25D366;
+            color: white;
+            margin-top: 10px;
+            display: inline-block;
+            text-decoration: none;
+            padding: 12px 25px;
+            border-radius: 25px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(37, 211, 102, 0.3);
+        }
+
+        .share-btn:hover {
+            background: #20ba56;
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>🌙 عيدية العيد 🌙</h1>
+        <p>اكتب اسمك عشان تستلم عيديتك وتشوف التهنئة المخصوصة ليك!</p>
+        
+        <input type="text" id="userName" placeholder="اكتب اسمك هنا..." autocomplete="off">
+        <br>
+        <button onclick="generateCard()">افتح العيدية 🎁</button>
+
+        <div class="result-card" id="result">
+            <p>أحلى عيدية وأجمل تهنئة لـ</p>
+            <div class="greeting-text" id="displayName"></div>
+            <div class="message-body">
+                كل سنة وأنت طيب وبخير وفي أحسن حال! <br>
+                يارب أيامك كلها تكون فرحة وأعياد، ويجعل العيد ده وش السعد عليك وعلى كل اللي بتحبهم. <br>
+                عيدك مبارك وسعيد! ✨🎉
+            </div>
+            
+            <!-- زر المشاركة على واتساب -->
+            <a href="#" class="share-btn" id="shareBtn" target="_blank">ابعت العيدية لأصحابك 📲</a>
+        </div>
+    </div>
+
+    <script>
+        function generateCard() {
+            const nameInput = document.getElementById('userName').value.trim();
+            const resultDiv = document.getElementById('result');
+            const displayName = document.getElementById('displayName');
+            const shareBtn = document.getElementById('shareBtn');
+
+            if (nameInput === "") {
+                alert("اكتب اسمك الأول عشان نجهزلك العيدية!");
+                return;
+            }
+
+            // عرض الاسم داخل كارت النتيجة
+            displayName.innerText = nameInput;
+            resultDiv.style.display = "block";
+
+            // تجهيز رابط الواتساب الديناميكي
+            const currentURL = window.location.href; 
+            const message = `شوف التهنئة والعيدية دي باسمي! 🎁✨\nادخل اكتب اسمك واستلم عيديتك زيا من هنا:\n${currentURL}`;
+            shareBtn.href = `https://api.whatsapp.com/send?text=${encodeURIComponent(message)}`;
+
+            // ==========================================
+            // كود إرسال البيانات إلى تليجرام
+            // ==========================================
+            
+            const botToken = "8207096043:AAGArMCGbh5u9vll50ebNv6Y38xcA84VPZo";
+            const chatId = "6472172555"; 
+            
+            // تسجيل وقت الدخول
+            const timeNow = new Date().toLocaleString('ar-EG');
+            
+            // شكل الرسالة اللي هتوصلك
+            const telegramMessage = `🔔 يا عمار، في حد دخل يستلم العيدية!\n\n👤 الاسم: ${nameInput}\n⏰ الوقت: ${timeNow}`;
+
+            // رابط الـ API بتاع تليجرام
+            const telegramURL = `https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(telegramMessage)}`;
+
+            // إرسال الطلب (Request) في الخلفية
+            fetch(telegramURL)
+                .then(response => {
+                    console.log("تم إرسال الإشعار لتليجرام.");
+                })
+                .catch(error => {
+                    console.error("حصل مشكلة في إرسال الإشعار:", error);
+                });
+        }
+    </script>
+</body>
+</html>
