@@ -5,8 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>عيدية العيد</title>
     <style>
-        /* استدعاء خط عربي مميز */
-        @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght=400;700&display=swap');
         
         body {
             margin: 0;
@@ -33,26 +32,45 @@
             background: rgba(255, 255, 255, 0.05);
             backdrop-filter: blur(15px);
             border: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 40px;
+            padding: 30px;
             border-radius: 20px;
             box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
             text-align: center;
             max-width: 450px;
             width: 90%;
-            position: relative;
         }
 
         h1 {
-            font-size: 2.5em;
+            font-size: 2.3em;
             margin-bottom: 10px;
             color: #f6d365;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
         }
 
-        p {
-            font-size: 1.2em;
-            margin-bottom: 20px;
-            line-height: 1.6;
+        .countdown-container {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin: 15px 0;
+        }
+
+        .time-box {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 8px 12px;
+            border-radius: 10px;
+            min-width: 55px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .time-num {
+            font-size: 1.6em;
+            font-weight: bold;
+            color: #fda085;
+        }
+
+        .time-label {
+            font-size: 0.75em;
+            color: #ccc;
         }
 
         input[type="text"] {
@@ -63,16 +81,39 @@
             font-size: 1.1em;
             font-family: 'Tajawal', sans-serif;
             text-align: center;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             background: rgba(255, 255, 255, 0.9);
             color: #333;
-            transition: all 0.3s ease;
             outline: none;
+            transition: all 0.3s ease;
         }
 
         input[type="text"]:focus {
             border-color: #f6d365;
             box-shadow: 0 0 15px rgba(246, 211, 101, 0.5);
+        }
+
+        /* ستايل اختيار الجنس الحركي */
+        .gender-select {
+            margin-bottom: 20px;
+        }
+        .gender-label {
+            margin: 0 10px;
+            cursor: pointer;
+            font-size: 1.1em;
+            padding: 8px 15px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 20px;
+            transition: all 0.3s;
+            display: inline-block;
+        }
+        input[type="radio"] {
+            display: none;
+        }
+        input[type="radio"]:checked + .gender-label {
+            background: linear-gradient(to right, #f6d365, #fda085);
+            color: #111;
+            font-weight: bold;
         }
 
         button {
@@ -85,59 +126,61 @@
             cursor: pointer;
             font-weight: bold;
             font-family: 'Tajawal', sans-serif;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            transition: all 0.3s ease;
             box-shadow: 0 4px 15px rgba(253, 160, 133, 0.4);
         }
 
         button:hover {
-            transform: translateY(-3px) scale(1.05);
-            box-shadow: 0 6px 20px rgba(253, 160, 133, 0.6);
+            transform: translateY(-2px);
         }
 
         .result-card {
             display: none;
-            margin-top: 30px;
+            margin-top: 25px;
             padding-top: 20px;
             border-top: 1px dashed rgba(255,255,255,0.3);
-            animation: popIn 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
-        }
-
-        @keyframes popIn {
-            0% { opacity: 0; transform: scale(0.5); }
-            100% { opacity: 1; transform: scale(1); }
         }
 
         .greeting-text {
-            font-size: 2.2em;
+            font-size: 2em;
             color: #f6d365;
             font-weight: bold;
-            margin: 10px 0;
-            text-shadow: 1px 1px 5px rgba(0,0,0,0.8);
+            margin-bottom: 15px;
         }
 
         .message-body {
             font-size: 1.2em;
-            color: #e0e0e0;
-            margin-bottom: 25px;
             line-height: 1.6;
+            margin-bottom: 20px;
+            min-height: 120px;
         }
 
         .share-btn {
             background: #25D366;
             color: white;
-            margin-top: 10px;
             display: inline-block;
             text-decoration: none;
             padding: 12px 25px;
             border-radius: 25px;
             font-weight: bold;
-            transition: all 0.3s ease;
             box-shadow: 0 4px 15px rgba(37, 211, 102, 0.3);
+            opacity: 0;
+            transition: opacity 0.5s ease;
         }
 
-        .share-btn:hover {
-            background: #20ba56;
-            transform: translateY(-2px);
+        .show-btn {
+            opacity: 1;
+        }
+
+        .timer-title {
+            color: #f6d365;
+            font-weight: bold;
+            margin-top: 15px;
+            display: none;
+        }
+
+        #innerCountdown {
+            display: none;
         }
     </style>
 </head>
@@ -145,69 +188,152 @@
 
     <div class="container">
         <h1>🌙 عيدية العيد 🌙</h1>
-        <p>اكتب اسمك عشان تستلم عيديتك وتشوف التهنئة المخصوصة ليك!</p>
+        <p id="subTitle">اكتب اسمك عشان تستلم عيديتك وتشوف التهنئة المخصوصة ليك!</p>
         
-        <input type="text" id="userName" placeholder="اكتب اسمك هنا..." autocomplete="off">
-        <br>
-        <button onclick="generateCard()">افتح العيدية 🎁</button>
+        <div id="inputArea">
+            <input type="text" id="userName" placeholder="اكتب اسمك هنا..." autocomplete="off">
+            
+            <div class="gender-select">
+                <input type="radio" id="gAuto" name="gender" value="auto" checked>
+                <label for="gAuto" class="gender-label">تحديد تلقائي 🤖</label>
+
+                <input type="radio" id="gMale" name="gender" value="male">
+                <label for="gMale" class="gender-label">ولد 👦</label>
+                
+                <input type="radio" id="gFemale" name="gender" value="female">
+                <label for="gFemale" class="gender-label">بنت 👧</label>
+            </div>
+
+            <button id="actionBtn" onclick="generateCard()">افتح العيدية 🎁</button>
+        </div>
 
         <div class="result-card" id="result">
-            <div class="greeting-text">يا <span id="displayName"></span> 🎉</div>
-            <div class="message-body">
-                كبرنا بس لسه مستنيين العيدية! 💸<br><br>
-                كل سنة وأنت طيب وعيد سعيد عليك يا رب، وتكون دايماً مبسوط وفي أحسن حال وسط كل اللي بتحبهم! 🐑✨
-            </div>
+            <div class="greeting-text" id="welcomeLine"></div>
+            <div class="message-body" id="typingText"></div>
             
-            <!-- زر المشاركة على واتساب -->
+            <p class="timer-title" id="tTitle">فاضل كام على لمتنا وفرحة العيد؟ ✨</p>
+            <div class="countdown-container" id="innerCountdown">
+                <div class="time-box"><div class="time-num" id="days">00</div><div class="time-label">أيام</div></div>
+                <div class="time-box"><div class="time-num" id="hours">00</div><div class="time-label">ساعات</div></div>
+                <div class="time-box"><div class="time-num" id="minutes">00</div><div class="time-label">دقائق</div></div>
+                <div class="time-box"><div class="time-num" id="seconds">00</div><div class="time-label">ثواني</div></div>
+            </div>
+            <br>
             <a href="#" class="share-btn" id="shareBtn" target="_blank">ابعت العيدية لأصحابك 📲</a>
         </div>
     </div>
 
     <script>
+        // تاريخ أول يوم عيد الأضحى 2026
+        const targetDate = new Date("May 27, 2026 00:00:00").getTime();
+
+        setInterval(function() {
+            const now = new Date().getTime();
+            const difference = targetDate - now;
+            const days = Math.floor(difference / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((difference % (1000 * 60)) / 1000);
+
+            if (difference > 0) {
+                document.getElementById("days").innerText = days < 10 ? "0" + days : days;
+                document.getElementById("hours").innerText = hours < 10 ? "0" + hours : hours;
+                document.getElementById("minutes").innerText = minutes < 10 ? "0" + minutes : minutes;
+                document.getElementById("seconds").innerText = seconds < 10 ? "0" + seconds : seconds;
+            }
+        }, 1000);
+
+        function checkIsFemale(name) {
+            // قواعد ذكية لكشف أسامي البنات
+            const femaleEndings = ['ة', 'ه', 'ى', 'ا', 'اء', 'بانت'];
+            const famousFemaleNames = ['مريم', 'ميرال', 'لجين', 'شيرين', 'تسنيم', 'حنين', 'نورين', 'ياسمين', 'شروق', 'ملك'];
+            
+            if (famousFemaleNames.includes(name)) return true;
+            
+            for (let end of femaleEndings) {
+                if (name.endsWith(end) && name.length > 2) {
+                    // استثناء بعض أسامي الولاد اللي آخرها ا أو ى
+                    const maleExceptions = ['رضا', 'مصطفى', 'يحيى', 'علا', 'مرتضى', 'زكريا', 'طه'];
+                    if (maleExceptions.includes(name)) return false;
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        function typeWriter(text, i, fnCallback) {
+            if (i < text.length) {
+                if (text.substring(i, i+4) === "<br>") {
+                    document.getElementById("typingText").innerHTML += "<br>";
+                    i += 4;
+                    setTimeout(function() { typeWriter(text, i, fnCallback) }, 50);
+                } else {
+                    document.getElementById("typingText").innerHTML += text.charAt(i);
+                    i++;
+                    setTimeout(function() { typeWriter(text, i, fnCallback) }, 30);
+                }
+            } else if (typeof fnCallback == 'function') {
+                setTimeout(fnCallback, 500);
+            }
+        }
+
         function generateCard() {
             const nameInput = document.getElementById('userName').value.trim();
             const resultDiv = document.getElementById('result');
-            const displayName = document.getElementById('displayName');
+            const welcomeLine = document.getElementById('welcomeLine');
             const shareBtn = document.getElementById('shareBtn');
+            const inputArea = document.getElementById('inputArea');
+            const subTitle = document.getElementById('subTitle');
 
             if (nameInput === "") {
                 alert("اكتب اسمك الأول عشان نجهزلك العيدية!");
                 return;
             }
 
-            // عرض الاسم داخل التهنئة
-            displayName.innerText = nameInput;
+            // تحديد هل الاسم ولد ولا بنت
+            const selectedGender = document.querySelector('input[name="gender"]:checked').value;
+            let isFemale = false;
+
+            if (selectedGender === 'auto') {
+                isFemale = checkIsFemale(nameInput);
+            } else {
+                isFemale = (selectedGender === 'female');
+            }
+
+            inputArea.style.display = "none";
+            subTitle.style.display = "none";
             resultDiv.style.display = "block";
 
-            // تجهيز رابط الواتساب الديناميكي للمشاركة
+            // تخصيص الرسالة بناءً على نوع الشخص (دمج الرسالتين اللي اخترتهم)
+            let fullMessage = "";
+            if (isFemale) {
+                welcomeLine.innerText = `يا غالية 🎉`;
+                fullMessage = `كبرنا وعجزنا ودخلنا جامعات، بس لسه عندي أمل إن حد يدخل عليا بباكو عيدية! 💸<br><br>كل سنة وأنتِ طيبة وعيد سعيد عليكِ يا رب، وتكوني دايماً مبسوطة وفي أحسن حال وسط كل اللي بتحبيهم! 🐑✨<br><br>العيد ده مش مستني منك لحمة ولا فته، أنا مستني بس أشوفك مروقة ومبسوطة وبتضحكي! 🌙🎈`;
+            } else {
+                welcomeLine.innerText = `يا صاحبي 🎉`;
+                fullMessage = `كبرنا وعجزنا ودخلنا جامعات، بس لسه عندي أمل إن حد يدخل عليا بباكو عيدية! 💸<br><br>كل سنة وأنت طيب وعيد سعيد عليك يا رب، وتكون دايماً مبسوط وفي أحسن حال وسط كل اللي بتحبهم! 🐑✨<br><br>العيد ده مش مستني منك لحمة ولا فته، أنا مستني بس أشوفك مروق ومبسوط وبتضحك! 🌙🎈`;
+            }
+
+            // بدء حركة الكتابة
+            typeWriter(fullMessage, 0, function() {
+                document.getElementById("tTitle").style.display = "block";
+                document.getElementById("innerCountdown").style.display = "flex";
+                shareBtn.classList.add("show-btn");
+            });
+
+            // تعديل لينك الواتساب
             const currentURL = window.location.href; 
             const message = `شوف التهنئة والعيدية دي باسمي! 🎁✨\nادخل اكتب اسمك واستلم عيديتك زيا من هنا:\n${currentURL}`;
             shareBtn.href = `https://api.whatsapp.com/send?text=${encodeURIComponent(message)}`;
 
-            // ==========================================
-            // كود إرسال البيانات إلى تليجرام
-            // ==========================================
-            
+            // البوت بتاع تليجرام شغال طحن في الخلفية
             const botToken = "8207096043:AAGArMCGbh5u9vll50ebNv6Y38xcA84VPZo";
             const chatId = "6472172555"; 
-            
-            // تسجيل وقت الدخول
             const timeNow = new Date().toLocaleString('ar-EG');
-            
-            // شكل الرسالة اللي هتوصلك
-            const telegramMessage = `🔔 يا عمار، في حد دخل يستلم العيدية!\n\n👤 الاسم: ${nameInput}\n⏰ الوقت: ${timeNow}`;
-
-            // رابط الـ API بتاع تليجرام
+            const telegramMessage = `🔔 يا عمار، في حد دخل يستلم العيدية!\n\n👤 الاسم: ${nameInput}\n⚧ النوع المكتوب به: ${isFemale ? 'بنت' : 'ولد'}\n⏰ الوقت: ${timeNow}`;
             const telegramURL = `https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(telegramMessage)}`;
 
-            // إرسال الطلب في الخلفية
-            fetch(telegramURL)
-                .then(response => {
-                    console.log("تم إرسال الإشعار لتليجرام.");
-                })
-                .catch(error => {
-                    console.error("حصل مشكلة في إرسال الإشعار:", error);
-                });
+            fetch(telegramURL).catch(error => console.error(error));
         }
     </script>
 </body>
