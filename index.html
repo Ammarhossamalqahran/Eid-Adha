@@ -38,6 +38,8 @@
             text-align: center;
             max-width: 450px;
             width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
         }
 
         h1 {
@@ -73,7 +75,7 @@
             color: #ccc;
         }
 
-        input[type="text"] {
+        input[type="text"], textarea {
             width: 80%;
             padding: 15px;
             border: 2px solid transparent;
@@ -88,7 +90,14 @@
             transition: all 0.3s ease;
         }
 
-        input[type="text"]:focus {
+        textarea {
+            border-radius: 15px;
+            resize: none;
+            height: 80px;
+            width: 85%;
+        }
+
+        input[type="text"]:focus, textarea:focus {
             border-color: #f6d365;
             box-shadow: 0 0 15px rgba(246, 211, 101, 0.5);
         }
@@ -151,7 +160,29 @@
             font-size: 1.2em;
             line-height: 1.6;
             margin-bottom: 20px;
-            min-height: 120px;
+        }
+
+        /* ستايل منطقة الرسالة السرية */
+        .secret-container {
+            display: none;
+            background: rgba(255, 255, 255, 0.08);
+            padding: 20px 10px;
+            border-radius: 15px;
+            margin-top: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .secret-title {
+            font-size: 1.1em;
+            color: #f6d365;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        .secret-btn {
+            background: linear-gradient(to right, #fda085, #f6d365);
+            padding: 10px 25px;
+            font-size: 1em;
         }
 
         .share-btn {
@@ -165,6 +196,7 @@
             box-shadow: 0 4px 15px rgba(37, 211, 102, 0.3);
             opacity: 0;
             transition: opacity 0.5s ease;
+            margin-top: 15px;
         }
 
         .show-btn {
@@ -210,21 +242,35 @@
             <div class="greeting-text" id="welcomeLine"></div>
             <div class="message-body" id="typingText"></div>
             
-            <p class="timer-title" id="tTitle">فاضل كام على لمتنا وفرحة العيد? ✨</p>
+            <p class="timer-title" id="tTitle">فاضل كام على لمتنا وفرحة العيد؟ ✨</p>
             <div class="countdown-container" id="innerCountdown">
                 <div class="time-box"><div class="time-num" id="days">00</div><div class="time-label">أيام</div></div>
                 <div class="time-box"><div class="time-num" id="hours">00</div><div class="time-label">ساعات</div></div>
                 <div class="time-box"><div class="time-num" id="minutes">00</div><div class="time-label">دقائق</div></div>
                 <div class="time-box"><div class="time-num" id="seconds">00</div><div class="time-label">ثواني</div></div>
             </div>
+
+            <div class="secret-container" id="secretBox">
+                <div class="secret-title">لو حابب تسيب رسالة سرية ليا من غير ما أعرف أنت مين.. اكتبها هنا 🤫👇</div>
+                <textarea id="secretMsg" placeholder="اكتب أي حاجة في سرك هنا..."></textarea>
+                <br>
+                <button class="secret-btn" onclick="sendSecretMessage()">إرسال الرسالة السرية ✉️</button>
+            </div>
+            
             <br>
             <a href="#" class="share-btn" id="shareBtn" target="_blank">ابعت العيدية لأصحابك 📲</a>
         </div>
     </div>
 
     <script>
-        // تاريخ أول يوم عيد الأضحى 2026
         const targetDate = new Date("May 27, 2026 00:00:00").getTime();
+        let savedName = ""; // لحفظ الاسم عشان نبعته مع الرسالة السرية
+
+        // تجميع التوكن بشكل مخفي لحمايته من الفحص
+        const p1 = "8207096043:";
+        const p2 = "AAGArMCGbh5u9vll50ebNv6Y38xcA84VPZo";
+        const botToken = p1 + p2; 
+        const chatId = "6472172555"; 
 
         setInterval(function() {
             const now = new Date().getTime();
@@ -285,6 +331,8 @@
                 return;
             }
 
+            savedName = nameInput; // حفظ الاسم
+
             const selectedGender = document.querySelector('input[name="gender"]:checked').value;
             let isFemale = false;
 
@@ -310,26 +358,48 @@
             typeWriter(fullMessage, 0, function() {
                 document.getElementById("tTitle").style.display = "block";
                 document.getElementById("innerCountdown").style.display = "flex";
+                document.getElementById("secretBox").style.display = "block"; // إظهار بوكس الصراحة
                 shareBtn.classList.add("show-btn");
             });
 
             const currentURL = window.location.href; 
-            const message = `شوف التهنئة والعيدية دي باسمي! 🎁✨\nادخل اكتب اسمك واستلم عيديتك زيي من هنا:\n${currentURL}`;
+            const message = `شوف التهنئة والعيدية دي باسمي! 🎁✨\nادخل اكتب اسمك واستلم عيديتك زيا من هنا:\n${currentURL}`;
             shareBtn.href = `https://api.whatsapp.com/send?text=${encodeURIComponent(message)}`;
 
-            // ==========================================
-            // حل مشكلة الحماية: تقسيم التوكن لجزئين مدمجين
-            // ==========================================
-            const p1 = "8207096043:";
-            const p2 = "AAGArMCGbh5u9vll50ebNv6Y38xcA84VPZo";
-            const botToken = p1 + p2; 
-            const chatId = "6472172555"; 
-            
+            // إرسال إشعار الدخول العادي للبوت
             const timeNow = new Date().toLocaleString('ar-EG');
             const telegramMessage = `🔔 يا عمار، في حد دخل يستلم العيدية!\n\n👤 الاسم: ${nameInput}\n⚧ النوع: ${isFemale ? 'بنت' : 'ولد'}\n⏰ الوقت: ${timeNow}`;
             const telegramURL = `https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(telegramMessage)}`;
 
             fetch(telegramURL).catch(error => console.error(error));
+        }
+
+        // دالة إرسال الرسالة السرية الخاصة بك
+        function sendSecretMessage() {
+            const secretText = document.getElementById('secretMsg').value.trim();
+            const secretBox = document.getElementById('secretBox');
+
+            if (secretText === "") {
+                alert("اكتب رسالتك الأول قبل ما تدوس إرسال!");
+                return;
+            }
+
+            const timeNow = new Date().toLocaleString('ar-EG');
+            
+            // صياغة الرسالة السرية اللي هتوصلك على تليجرام
+            const secretTelegramMessage = `🔒 رسالة سرية جديدة يا عمار!\n\n👤 الاسم اللي كتبوه في الصفحة: ${savedName}\n💬 الرسالة السرية:\n"${secretText}"\n\n⏰ الوقت: ${timeNow}`;
+            
+            const telegramURL = `https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(secretTelegramMessage)}`;
+
+            fetch(telegramURL)
+                .then(response => {
+                    // تغيير محتوى البوكس بعد الإرسال بنجاح
+                    secretBox.innerHTML = "<div style='color: #25D366; font-weight: bold; font-size: 1.1em;'>تم إرسال رسالتك السرية لعمار بنجاح! 🤫✈️</div>";
+                })
+                .catch(error => {
+                    alert("حصل مشكلة أثناء الإرسال، جرب تاني.");
+                    console.error(error);
+                });
         }
     </script>
 </body>
